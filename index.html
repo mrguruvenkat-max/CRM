@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex CRM Enterprise | Lead Pipeline Manager</title>
+    <meta name="description"
+        content="Manage client leads, track qualified sales pipelines, allocate agents, and audit website form message ingestion in real-time.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- REAL-TIME NOTIFICATION TOASTER CONTAINER -->
+    <div id="toasterContainer" class="toaster-container"></div>
+
+    <!-- SECURE ADMIN LOGIN SCREEN -->
+    <div id="lockScreen" class="lock-screen active">
+        <div class="lock-overlay"></div>
+        <div class="lock-card glass animate-fade-in">
+            <div class="lock-logo-wrapper">
+                <div class="lock-logo-icon">▲</div>
+                <h2>APEX CRM</h2>
+                <p class="lock-subtitle">Enterprise Lead Pipeline Manager</p>
+            </div>
+
+            <form id="loginForm" class="lock-form">
+                <div class="form-group-login">
+                    <label for="adminUsername">Username</label>
+                    <input type="text" id="adminUsername" placeholder="e.g. admin" required autocomplete="username">
+                </div>
+                <div class="form-group-login">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" placeholder="••••••••" required
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" id="unlockBtn" class="btn-primary">Sign In</button>
+                <div class="passcode-hint">Default Username: <span class="highlight">admin</span> | Password: <span
+                        class="highlight">admin123</span></div>
+            </form>
+            <div class="lock-footer">
+                <p>🔒 Secure Admin Access Control</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER (HIDDEN UNTIL UNLOCKED) -->
+    <div id="appContainer" class="app-container hidden">
+
+        <!-- GLOBAL HEADER / NAVIGATION -->
+        <header class="navbar glass">
+            <div class="nav-brand">
+                <span class="brand-icon">▲</span>
+                <span class="brand-text">Apex <span class="accent-indigo">CRM</span> <span
+                        class="version-tag">Enterprise</span></span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link active" data-tab="dashboard">Dashboard</a>
+                <a href="#" class="nav-link" data-tab="kanban">Leads Board</a>
+                <a href="#" class="nav-link" data-tab="settings">Settings</a>
+            </nav>
+            <div class="nav-actions">
+                <!-- Notifications Bell -->
+                <div class="notif-wrapper">
+                    <button id="notifBellBtn" class="btn-icon" title="System Logs / Activity notifications">
+                        🔔
+                        <span id="notifBadge" class="notif-badge hidden">0</span>
+                    </button>
+                    <!-- Floating Notification Panel -->
+                    <div id="notifPanel" class="notif-panel glass hidden">
+                        <div class="notif-panel-header">
+                            <h4>🔔 System Activity Logs</h4>
+                            <button id="clearNotifsBtn" class="btn-text btn-sm">Clear</button>
+                        </div>
+                        <div id="notifList" class="notif-list">
+                            <div class="empty-state">No new system alerts.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-user-badge">
+                    <span class="status-indicator-green"></span>
+                    <span id="navAdminUser">Admin</span>
+                </div>
+                <button id="lockAppBtn" class="btn-icon" title="Logout / Lock Session">🔒</button>
+            </div>
+        </header>
+
+        <!-- MAIN TABS CONTAINER -->
+        <main class="main-content">
+            <h1 class="hidden">Apex CRM Dashboard</h1>
+
+            <!-- TAB 1: ANALYTICS DASHBOARD -->
+            <div id="dashboardTab" class="tab-pane active">
+                <!-- KPI CARDS -->
+                <div class="dashboard-header glass">
+                    <div class="dash-stat">
+                        <span class="dash-stat-label">Total Leads</span>
+                        <div class="dash-stat-value-wrapper">
+                            <span class="dash-stat-value text-indigo" id="statTotalLeads">0</span>
+                        </div>
+                        <span class="dash-stat-sub">Across all pipeline stages</span>
+                    </div>
+                    <div class="dash-stat">
+                        <span class="dash-stat-label">Pipeline Value</span>
+                        <div class="dash-stat-value-wrapper">
+                            <span class="dash-stat-value text-indigo" id="statPipelineValue">$0</span>
+                        </div>
+                        <span class="dash-stat-sub">Sum of active budgets</span>
+                    </div>
+                    <div class="dash-stat">
+                        <span class="dash-stat-label">New Leads</span>
+                        <div class="dash-stat-value-wrapper">
+                            <span class="dash-stat-value text-blue" id="statNewLeads">0</span>
+                        </div>
+                        <span class="dash-stat-sub">Awaiting outreach</span>
+                    </div>
+                    <div class="dash-stat">
+                        <span class="dash-stat-label">Contacted</span>
+                        <div class="dash-stat-value-wrapper">
+                            <span class="dash-stat-value text-orange" id="statContactedLeads">0</span>
+                        </div>
+                        <span class="dash-stat-sub">Active negotiations</span>
+                    </div>
+                    <div class="dash-stat">
+                        <span class="dash-stat-label">Converted</span>
+                        <div class="dash-stat-value-wrapper">
+                            <span class="dash-stat-value text-green" id="statConvertedLeads">0</span>
+                        </div>
+                        <span class="dash-stat-sub">Closed partnerships</span>
+                    </div>
+                    <div class="dash-stat">
+                        <span class="dash-stat-label">Conversion Rate</span>
+                        <div class="dash-stat-value-wrapper">
+                            <span class="dash-stat-value text-gold" id="statConversionRate">0%</span>
+                        </div>
+                        <div class="progress-mini-bar">
+                            <div class="progress-mini-fill" id="conversionRateBar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- LEFT COLUMN: CHARTS -->
+                    <div class="dashboard-col glass">
+                        <h3>Pipeline Analytics</h3>
+                        <p class="panel-desc">Visual distribution of lead origins, sales pipeline funnels, and growth
+                            trends.</p>
+
+                        <div class="charts-container">
+                            <div class="chart-box">
+                                <h4>Lead Sources</h4>
+                                <div class="canvas-wrapper">
+                                    <canvas id="sourcesChart" width="180" height="180"></canvas>
+                                </div>
+                                <div class="chart-legend" id="sourcesLegend">
+                                    <!-- Legends populated by JS -->
+                                </div>
+                            </div>
+                            <div class="chart-box">
+                                <h4>Conversion Funnel</h4>
+                                <div class="canvas-wrapper">
+                                    <canvas id="funnelChart" width="180" height="180"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-box span-2">
+                                <h4>Leads Inflow Trend</h4>
+                                <div class="canvas-wrapper">
+                                    <canvas id="trendsChart" width="380" height="180"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: ACTIONABLE ITEMS -->
+                    <div class="dashboard-col glass">
+                        <div class="col-header-flex">
+                            <h3>🔥 Hot Follow-Ups</h3>
+                            <span class="badge-count" id="followUpCount">0</span>
+                        </div>
+                        <p class="panel-desc">Active leads scheduled for client follow-up outreach today.</p>
+
+                        <div class="follow-ups-list" id="followUpsList">
+                            <!-- Populated dynamically -->
+                            <div class="empty-state">No pending follow-ups found.</div>
+                        </div>
+
+                        <!-- Top Representatives leaderboard -->
+                        <div class="rep-leaderboard-section">
+                            <h3>🏆 Rep Performance</h3>
+                            <p class="panel-desc">Sales value and conversions generated by staff members.</p>
+                            <div class="leaderboard-list" id="repLeaderboard">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="quick-integration-teaser">
+                            <h4>Intake Webhook Endpoint</h4>
+                            <p>Send JSON POST requests to capture website form leads instantly:</p>
+                            <div class="code-snippet-small">
+                                <code id="webhookUrl">http://localhost:5000/api/public/leads</code>
+                                <button class="btn-copy-small"
+                                    onclick="navigator.clipboard.writeText(document.getElementById('webhookUrl').innerText); alert('Copied endpoint URL!');">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: KANBAN BOARD -->
+            <div id="kanbanTab" class="tab-pane">
+                <div class="kanban-controls glass">
+                    <div class="search-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="kanban-search"
+                            placeholder="Search pipeline by name, company, or rep...">
+                    </div>
+                    <button class="btn-primary" id="addLeadBtnKanban" style="margin-left: 15px; margin-right: 15px; white-space: nowrap;">➕ Add Lead</button>
+                    <div class="kanban-tips">
+                        <span>💡 Drag and drop cards to change status. Budget value counts automatically update.</span>
+                    </div>
+                </div>
+
+                <div class="kanban-board" id="kanbanBoard">
+                    <!-- Column 1: New -->
+                    <div class="kanban-column glass" data-status="new">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-indicator status-new"></span>
+                                New Leads
+                            </div>
+                            <span class="column-count" id="count-new">0</span>
+                        </div>
+                        <div class="column-cards" id="cards-new"></div>
+                    </div>
+
+                    <!-- Column 2: Contacted -->
+                    <div class="kanban-column glass" data-status="contacted">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-indicator status-contacted"></span>
+                                Contacted
+                            </div>
+                            <span class="column-count" id="count-contacted">0</span>
+                        </div>
+                        <div class="column-cards" id="cards-contacted"></div>
+                    </div>
+
+                    <!-- Column 3: Converted -->
+                    <div class="kanban-column glass" data-status="converted">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-indicator status-converted"></span>
+                                Converted
+                            </div>
+                            <span class="column-count" id="count-converted">0</span>
+                        </div>
+                        <div class="column-cards" id="cards-converted"></div>
+                    </div>
+
+                    <!-- Column 4: Lost -->
+                    <div class="kanban-column glass" data-status="lost">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-indicator status-lost"></span>
+                                Lost / Archived
+                            </div>
+                            <span class="column-count" id="count-lost">0</span>
+                        </div>
+                        <div class="column-cards" id="cards-lost"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- TAB 5: SETTINGS -->
+            <div id="settingsTab" class="tab-pane">
+                <div class="settings-grid">
+                    <div class="settings-card glass">
+                        <h3>⚙️ Administrator Account</h3>
+                        <p class="panel-desc">Manage authentication credentials for the CRM panel.</p>
+
+                        <form id="changePasswordForm" class="settings-form">
+                            <div class="form-group">
+                                <label for="settingsNewPassword">New Password</label>
+                                <input type="password" id="settingsNewPassword" placeholder="Minimum 4 characters"
+                                    required autocomplete="new-password">
+                            </div>
+                            <div class="form-group">
+                                <label for="settingsConfirmPassword">Confirm New Password</label>
+                                <input type="password" id="settingsConfirmPassword" placeholder="Repeat password"
+                                    required autocomplete="new-password">
+                            </div>
+                            <button type="submit" class="btn-primary">Update Credentials</button>
+                        </form>
+                    </div>
+
+                    <div class="settings-card glass danger-zone">
+                        <h3>🗑️ System Resets</h3>
+                        <p class="panel-desc">High risk administrative operations that impact database contents.</p>
+
+                        <div class="danger-action">
+                            <h4>Clear Pipeline Data</h4>
+                            <p>This will delete all client leads and history notes. This action is permanent.</p>
+                            <button id="resetAllLeadsBtn" class="btn-danger">Clear All Leads</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- LEAD DETAILS SLIDE-OUT PANEL (DRAWER) -->
+        <div id="leadDrawer" class="lead-drawer">
+            <div class="drawer-backdrop" id="drawerBackdrop"></div>
+            <div class="drawer-content glass">
+                <div class="drawer-header">
+                    <div class="drawer-title-area">
+                        <span class="drawer-source-badge" id="drawerSource">Website</span>
+                        <h2 id="drawerName">Lead Details</h2>
+                    </div>
+                    <button class="drawer-close" id="closeDrawerBtn">&times;</button>
+                </div>
+
+                <div class="drawer-body">
+                    <!-- Core Details Section -->
+                    <div class="drawer-section">
+                        <h4>Contact Details</h4>
+                        <div class="contact-grid">
+                            <div class="contact-detail-item">
+                                <span class="label">Email:</span>
+                                <span class="value" id="drawerEmail">john@example.com</span>
+                            </div>
+                            <div class="contact-detail-item">
+                                <span class="label">Phone:</span>
+                                <span class="value" id="drawerPhone">+1 555-0199</span>
+                            </div>
+                            <div class="contact-detail-item">
+                                <span class="label">Company:</span>
+                                <span class="value" id="drawerCompany">Acme Co</span>
+                            </div>
+                            <div class="contact-detail-item">
+                                <span class="label">Date Created:</span>
+                                <span class="value" id="drawerCreatedDate">June 3, 2026</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Management Form -->
+                    <div class="drawer-section">
+                        <h4>Pipeline Management</h4>
+                        <form id="drawerPipelineForm" class="drawer-form-grid">
+                            <div class="form-group">
+                                <label for="drawerStatusSelect">Lead Status</label>
+                                <select id="drawerStatusSelect">
+                                    <option value="new">New</option>
+                                    <option value="contacted">Contacted</option>
+                                    <option value="converted">Converted</option>
+                                    <option value="lost">Lost</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="drawerPrioritySelect">Lead Priority</label>
+                                <select id="drawerPrioritySelect">
+                                    <option value="low">Low Priority</option>
+                                    <option value="medium">Medium Priority</option>
+                                    <option value="high">High Priority</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="drawerRepSelect">Assigned Representative</label>
+                                <select id="drawerRepSelect">
+                                    <option value="Unassigned">👤 Unassigned</option>
+                                    <option value="Sarah Jenkins">👩‍💼 Sarah Jenkins</option>
+                                    <option value="David Vance">👨‍💼 David Vance</option>
+                                    <option value="Alex Mercer">👨‍💻 Alex Mercer</option>
+                                    <option value="Chloe Reed">👩‍💻 Chloe Reed</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="drawerTemperatureSelect">Lead Temperature</label>
+                                <select id="drawerTemperatureSelect">
+                                    <option value="hot">🔥 Hot (Active)</option>
+                                    <option value="warm">🟡 Warm (Nurturing)</option>
+                                    <option value="cold">❄️ Cold (Passive)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="drawerBudgetInput">Estimated Budget ($)</label>
+                                <input type="number" id="drawerBudgetInput" min="0" placeholder="e.g. 5000">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="drawerFollowUpDate">Next Follow-Up Date</label>
+                                <input type="date" id="drawerFollowUpDate">
+                            </div>
+
+                            <div class="col-span-2 form-actions">
+                                <button type="submit" class="btn-primary btn-sm">Save Changes</button>
+                                <button type="button" id="drawerDeleteLeadBtn" class="btn-danger btn-sm">Delete
+                                    Lead</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Timeline Notes Section -->
+                    <div class="drawer-section">
+                        <h4>Activity History & Notes</h4>
+
+                        <!-- Add Note Form -->
+                        <form id="drawerAddNoteForm" class="note-input-area">
+                            <textarea id="drawerNoteInput" rows="2"
+                                placeholder="Write a note, log an outreach, or record meeting details..."
+                                required></textarea>
+                            <button type="submit" class="btn-secondary btn-sm">Add Note</button>
+                        </form>
+
+                        <!-- Notes Timeline list -->
+                        <div class="timeline-notes" id="drawerNotesTimeline">
+                            <!-- Timeline entries -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span>▲</span> Apex CRM Enterprise Pipeline Manager
+                </div>
+                <p>Enterprise sales process tracking. MongoDB database engine active.</p>
+                <div class="footer-bottom">
+                    <span id="footerText">© 2026 Apex CRM Enterprise. Running on Node.js / Express.</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ADD LEAD MODAL -->
+    <div id="addLeadModal" class="modal-overlay hidden">
+        <div class="modal-card glass animate-fade-in">
+            <div class="modal-header">
+                <h3>➕ Add New Lead</h3>
+                <button class="modal-close" id="closeAddLeadModalBtn">&times;</button>
+            </div>
+            <form id="addLeadForm" class="modal-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="newLeadName">Full Name *</label>
+                        <input type="text" id="newLeadName" placeholder="e.g. John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadEmail">Email Address *</label>
+                        <input type="email" id="newLeadEmail" placeholder="e.g. john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadPhone">Phone Number</label>
+                        <input type="tel" id="newLeadPhone" placeholder="e.g. 555-0199">
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadCompany">Company</label>
+                        <input type="text" id="newLeadCompany" placeholder="e.g. Acme Corp">
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadBudget">Budget ($)</label>
+                        <input type="number" id="newLeadBudget" placeholder="e.g. 10000" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadSource">Source</label>
+                        <select id="newLeadSource">
+                            <option value="Manual Entry">Manual Entry</option>
+                            <option value="Website Form">Website Form</option>
+                            <option value="Marketing Lead">Marketing Lead</option>
+                            <option value="Consulting Form">Consulting Form</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadPriority">Priority</label>
+                        <select id="newLeadPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadTemp">Temperature</label>
+                        <select id="newLeadTemp">
+                            <option value="cold">Cold</option>
+                            <option value="warm" selected>Warm</option>
+                            <option value="hot">Hot</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadRep">Assign Representative</label>
+                        <select id="newLeadRep">
+                            <option value="Unassigned">Unassigned</option>
+                            <option value="Sarah Jenkins">Sarah Jenkins</option>
+                            <option value="David Vance">David Vance</option>
+                            <option value="Alex Mercer">Alex Mercer</option>
+                            <option value="Chloe Reed">Chloe Reed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeadFollowUp">Follow-Up Date</label>
+                        <input type="date" id="newLeadFollowUp">
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="newLeadMessage">Notes / Message</label>
+                    <textarea id="newLeadMessage" placeholder="Initial context or message details..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelAddLeadBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Lead</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

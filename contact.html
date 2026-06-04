@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get In Touch | Contact Us</title>
+    <meta name="description" content="Send us a message and our team will get back to you shortly.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="contact-style.css">
+</head>
+<body>
+
+    <div class="glow-sphere sphere-1"></div>
+    <div class="glow-sphere sphere-2"></div>
+
+    <div class="contact-container">
+        <div class="info-side">
+            <div class="logo-area">
+                <span class="logo-icon">▲</span>
+                <span class="logo-text">Apex<span class="accent-indigo">Agency</span></span>
+            </div>
+            
+            <div class="hero-text">
+                <h1>Let's build something great together.</h1>
+                <p>Submit your project details and a representative will contact you within 24 business hours to schedule a consultation.</p>
+            </div>
+
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <div class="feature-content">
+                        <h4>Rapid Response</h4>
+                        <p>Our sales team reviews submissions in real-time.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🛡️</span>
+                    <div class="feature-content">
+                        <h4>Secure Intake</h4>
+                        <p>Your business details are protected and encrypted.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-link">
+                <p>Are you an administrator? <a href="index.html">Go to CRM Dashboard →</a></p>
+            </div>
+        </div>
+
+        <div class="form-side glass">
+            <form id="contactForm">
+                <h2>Request a Quote</h2>
+                <p class="form-subtitle">Fill out the form below and verify pipeline intake.</p>
+                
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" placeholder="John Doe" required>
+                </div>
+
+                <div class="grid-2-cols">
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="+1 (555) 123-4567">
+                    </div>
+                </div>
+
+                <div class="grid-2-cols">
+                    <div class="form-group">
+                        <label for="company">Company Name</label>
+                        <input type="text" id="company" placeholder="Acme Corporation">
+                    </div>
+                    <div class="form-group">
+                        <label for="source">Primary Interest *</label>
+                        <select id="source" required>
+                            <option value="Website Form">🌐 Web Development</option>
+                            <option value="Mobile App Form">📱 Mobile Application</option>
+                            <option value="Marketing Lead">📈 SEO & Marketing</option>
+                            <option value="Consulting Form">🤝 IT Consulting</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Project Description & Message *</label>
+                    <textarea id="message" rows="4" placeholder="Tell us about your project goals, timelines, and budget..." required></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-submit">
+                    <span class="btn-text">Submit Request</span>
+                    <span class="btn-loader hidden">
+                        <span class="spinner"></span>
+                        Processing...
+                    </span>
+                </button>
+            </form>
+
+            <div id="successCard" class="success-card hidden">
+                <div class="success-icon">✓</div>
+                <h3>Request Received!</h3>
+                <p>Thank you for reaching out. A client manager has been assigned and your pipeline entry is created.</p>
+                
+                <div class="api-debug-box">
+                    <strong>CRM Integration Pipeline Response:</strong>
+                    <pre id="apiResponse">Waiting for API response...</pre>
+                </div>
+                
+                <button id="resetFormBtn" class="btn-secondary">Submit Another Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="contact-script.js"></script>
+</body>
+</html>
