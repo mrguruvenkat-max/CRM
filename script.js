@@ -221,7 +221,7 @@ function showIncomingLeadToast(lead) {
   const toast = document.createElement('div');
   toast.className = 'toast-alert';
   
-  const budgetText = lead.budget > 0 ? `($${Number(lead.budget).toLocaleString()})` : '';
+  const budgetText = lead.budget > 0 ? `(₹${Number(lead.budget).toLocaleString('en-IN')})` : '';
 
   toast.innerHTML = `
     <div class="toast-icon">⚡</div>
@@ -796,7 +796,7 @@ function renderKanban() {
     card.style.setProperty('--card-accent', SOURCE_COLORS[lead.source] || SOURCE_COLORS['Other']);
 
     const initials = (lead.assignedTo || 'U').split(' ').map(n => n[0]).join('').substring(0, 2);
-    const budgetStr = lead.budget > 0 ? `<strong>$${Number(lead.budget).toLocaleString()}</strong>` : '$0';
+    const budgetStr = lead.budget > 0 ? `<strong>₹${Number(lead.budget).toLocaleString('en-IN')}</strong>` : '₹0';
     const notesCount = (lead.notes || []).length;
     const notesCountHtml = notesCount > 0 ? `<span>💬 ${notesCount}</span>` : '';
 
@@ -1105,7 +1105,11 @@ function formatDate(isoString) {
 
 function formatCurrency(val) {
   const num = Number(val) || 0;
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+  return new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0
+}).format(num);
 }
 
 function escapeHTML(str) {
