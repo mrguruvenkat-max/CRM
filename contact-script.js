@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const response = await fetch(
-                "http://localhost:5000/api/public/leads",
+                "https://crm-4q9r.onrender.com/api/public/leads",
                 {
                     method: "POST",
                     headers: {
@@ -38,8 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             alert("✅ Lead submitted successfully!");
-            console.log(data);
-
             contactForm.reset();
 
         } catch (error) {
