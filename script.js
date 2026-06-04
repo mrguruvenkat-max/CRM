@@ -9,8 +9,7 @@ let selectedLeads = []; // Array of selected lead IDs for batch actions
 let notificationLogs = []; // In-memory system activity notifications
 let pollingTimer = null; // 5-second database check timer
 
-const API_BASE = window.location.port !== '5000' ? 'http://localhost:5000' : '';
-
+const API_BASE = 'https://crm-4q9r.onrender.com';
 // Constants
 const COLORS = {
   indigo: '#6366f1',
